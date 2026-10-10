@@ -62,19 +62,15 @@ def scan_ports_range(target_ip, start_port, end_port):
         thread.join()
 
 
-def save_report(target, ip):
-    filename = (
-        f"report_{target.replace('.', '_')}.txt"
-    )
+def save_report(target, ip_address):
+    filename = f"report_{target.replace('.', '_')}.txt"
 
     with open(filename, "w", encoding="utf-8") as report:
         report.write("PORT SCANNER REPORT\n")
         report.write("=" * 50 + "\n")
         report.write(f"Target: {target}\n")
-        report.write(f"IP: {ip}\n")
-        report.write(
-            f"Generated: {datetime.now()}\n\n"
-        )
+        report.write(f"IP: {ip_address}\n")
+        report.write(f"Generated: {datetime.now()}\n\n")
 
         if open_ports:
             report.write("OPEN PORTS\n")
@@ -85,17 +81,15 @@ def save_report(target, ip):
                     f"{port}/tcp\tOPEN\t{service}\n"
                 )
         else:
-            report.write(
-                "No open ports were found.\n"
-            )
+            report.write("No open ports found.\n")
 
     print(f"\n[+] Report saved: {filename}")
 
 
 def banner():
     print("=" * 50)
-    print("      PYTHON PORT SCANNER")
-    print("      Carlos Rodríguez")
+    print("         PYTHON PORT SCANNER")
+    print("        Carlos Rodriguez")
     print("=" * 50)
 
 
@@ -126,18 +120,14 @@ def main():
     banner()
 
     try:
-        target_ip = socket.gethostbyname(
-            args.target
-        )
+        target_ip = socket.gethostbyname(args.target)
     except socket.gaierror:
-        print("[!] Unable to resolve target.")
+        print("[!] Unable to resolve target")
         return
 
     print(f"Target : {args.target}")
     print(f"IP     : {target_ip}")
-    print(
-        f"Ports  : {args.start}-{args.end}"
-    )
+    print(f"Ports  : {args.start}-{args.end}")
 
     start_time = time.time()
 
@@ -147,4 +137,21 @@ def main():
         args.end
     )
 
-    elapsed = 
+    elapsed = time.time() - start_time
+
+    print("\nScan Results")
+    print("-" * 50)
+
+    if open_ports:
+        for port, service in sorted(open_ports):
+            print(f"{port}/tcp\tOPEN\t{service}")
+    else:
+        print("No open ports found.")
+
+    print(f"\nScan completed in {elapsed:.2f} seconds")
+
+    save_report(args.target, target_ip)
+
+
+if __name__ == "__main__":
+    main()
